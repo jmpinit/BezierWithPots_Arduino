@@ -8,8 +8,6 @@ AccelStepper stepper1(1, 2, 3);
 AccelStepper stepper2(1, 10, 11);
 AccelStepper stepper3(1, 5, 6);
 
-int ratioCount = 0;
-
 typedef struct Point {
   float x, y;
 } Point;
@@ -82,7 +80,6 @@ void loop() {
 
   unsigned long seed = seedOut(31);
 
-  ratioCount = 0;
   count = 0;
   randomSeed(seed);
 
@@ -188,8 +185,6 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
       h = h + .05;
       count += 1;
     }
-    
-    ratioCount++;
   }
 }
 
