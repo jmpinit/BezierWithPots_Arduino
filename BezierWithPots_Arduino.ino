@@ -15,8 +15,6 @@ typedef struct Point {
 } Point;
 
 int count = 0;
-float spiralRatio;
-float angle = 2 * PI *  spiralRatio;
 float h = 0;
 int startButton = 24;
 int aa, bb, cc, dd, ee, ff, gg, hh;
