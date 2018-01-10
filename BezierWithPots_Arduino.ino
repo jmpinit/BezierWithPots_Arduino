@@ -13,8 +13,7 @@ int ratioCount = 0;
 
 typedef struct Point {
   float x, y;
-} 
-Point;
+} Point;
 
 int count = 0;
 float spiralRatio;
