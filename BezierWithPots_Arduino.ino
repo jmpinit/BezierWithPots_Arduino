@@ -2,6 +2,8 @@
 #include <MultiStepper.h>
 #include <Servo.h>
 
+const int BUTTON_START = 24;
+
 MultiStepper steppers; 
 
 AccelStepper stepper1(1, 2, 3);
@@ -14,7 +16,6 @@ typedef struct Point {
 
 int count = 0;
 float h = 0;
-int startButton = 24;
 int aa, bb, cc, dd, ee, ff, gg, hh;
 
 void setup() {
@@ -53,11 +54,9 @@ void setup() {
 
 void loop() {
   findPotValues();
-  startButton = digitalRead(24);
-  
-  while(startButton == 1) {
+
+  while(digitalRead(BUTTON_START)) {
     findPotValues();
-    startButton = digitalRead(24);
     
     aa = analogRead(A13);
     bb = analogRead(A12);
