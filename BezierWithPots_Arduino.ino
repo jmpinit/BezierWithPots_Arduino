@@ -194,57 +194,39 @@ void sendPotValues(int (&pots)[8], int len) {
   Serial.println();
 }
 
-unsigned int bitOut(void)
-{
+unsigned int bitOut(void) {
   static unsigned long firstTime = 1, prev = 0;
   unsigned long bit1 = 0, bit0 = 0, x = 0, port = 0, limit = 99;
   
-  if (firstTime)
-  {
+  if (firstTime) {
     firstTime = 0;
     prev = analogRead(port);
   }
   
-  while (limit--)
-  {
+  while (limit--) {
     x = analogRead(port);
     bit1 = (prev != x ? 1 : 0);
     prev = x;
+
     x = analogRead(port);
     bit0 = (prev != x ? 1 : 0);
     prev = x;
-    if (bit1 != bit0)
+
+    if (bit1 != bit0) {
       break;
+    }
   }
   
   return bit1;
 }
 
-//------------------------------------------------------------------------------
-unsigned long seedOut(unsigned int noOfBits)
-{
+unsigned long seedOut(unsigned int noOfBits) {
   // return value with 'noOfBits' random bits set
   unsigned long seed = 0;
-  for (int i = 0; i < noOfBits; ++i)
+
+  for (int i = 0; i < noOfBits; ++i) {
     seed = (seed << 1) | bitOut();
+  }
     
   return seed;
-}
-
-void s1up() {
-  int zup = 100;
-
-  stepper3.setMaxSpeed(800);
-  stepper3.setAcceleration(800);
-
-  stepper3.runToPosition();
-}
-
-void s1down() {
-  int zdown = -100;
-
-  stepper3.setMaxSpeed(800);
-  stepper3.setAcceleration(800);
- 
-  stepper3.runToPosition();
 }
