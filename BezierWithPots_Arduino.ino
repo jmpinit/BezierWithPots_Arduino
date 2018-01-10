@@ -8,7 +8,6 @@ AccelStepper stepper1(1, 2, 3);
 AccelStepper stepper2(1, 10, 11);
 AccelStepper stepper3(1, 5, 6);
 
-int spiralRatioCount = 0;
 int ratioCount = 0;
 
 typedef struct Point {
@@ -96,7 +95,6 @@ void loop() {
 
   unsigned long seed = seedOut(31);
 
-  spiralRatioCount = 0;
   ratioCount = 0;
   count = 0;
   randomSeed(seed);
@@ -202,11 +200,9 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
       ///////////////////////////////////////////////////////////////////
       h = h + .05;
       count += 1;
-      spiralRatioCount++;
     }
     
     ratioCount++;
-    spiralRatioCount = 0;
   }
 }
 
