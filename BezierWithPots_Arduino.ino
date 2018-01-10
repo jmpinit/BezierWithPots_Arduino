@@ -16,7 +16,6 @@ typedef struct Point {
 
 int count = 0;
 float h = 0;
-int aa, bb, cc, dd, ee, ff, gg, hh;
 
 void setup() {
   Serial.begin(9600);
@@ -53,28 +52,34 @@ void setup() {
 }
 
 void loop() {
-  findPotValues();
+  // Bezier control points
+  Point ctrlPtA, ctrlPtB, ctrlPtC, ctrlPtD;
 
   while(digitalRead(BUTTON_START)) {
-    findPotValues();
-    
-    aa = analogRead(A13);
-    bb = analogRead(A12);
-    cc = analogRead(A11);
-    dd = analogRead(A10);
-    ee = analogRead(A1);
-    ff = analogRead(A3);
-    gg = analogRead(A4);
-    hh = analogRead(A0);
+    int pots[8] = {
+      analogRead(A13),
+      analogRead(A12),
+      analogRead(A11),
+      analogRead(A10),
+      analogRead(A1),
+      analogRead(A0),
+      analogRead(A4),
+      analogRead(A3),
+    };
 
-    aa = aa * 10;
-    bb = bb * 10;
-    cc = cc * 11;
-    dd = dd * 11;
-    ee = ee * 11;
-    ff = ff * 11;
-    gg = gg * 10;
-    hh = hh * 10;
+    sendPotValues(pots, sizeof(pots) / sizeof(int));
+
+    ctrlPtA.x = pots[0] * 10;
+    ctrlPtA.y = pots[1] * 10;
+
+    ctrlPtB.x = pots[2] * 11;
+    ctrlPtB.y = pots[3] * 11;
+    
+    ctrlPtC.x = pots[4] * 11;
+    ctrlPtC.y = pots[7] * 11;
+
+    ctrlPtD.x = pots[6] * 10;
+    ctrlPtD.y = pots[5] * 10;
   }
 
   unsigned long seed = seedOut(31);
@@ -85,20 +90,11 @@ void loop() {
   float boxWidth = 8000;
   float boxHeight = 5000;
 
-  Point a = { 
-    .x = aa, .y = bb };
-  Point b = { 
-    .x = cc, .y = dd };
-  Point c = { 
-    .x = ee, .y = ff };
-  Point d = { 
-    .x = gg, .y = hh };
-
   int nAngle = 0;
   float increment = .01;
   int radius = 80;
 
-  drawBezierCircles(&a, &b, &c, &d);
+  drawBezierCircles(&ctrlPtA, &ctrlPtB, &ctrlPtC, &ctrlPtD);
   delay(1000);
 }
 
@@ -187,32 +183,13 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
   }
 }
 
-void findPotValues() {
-  int pot1 = analogRead(A13);
-  int pot2 = analogRead(A12);
-  int pot3 = analogRead(A11);
-  int pot4 = analogRead(A10);
-  int pot5 = analogRead(A1);
-  int pot6 = analogRead(A0);
-  int pot7 = analogRead(A4);
-  int pot8 = analogRead(A3);
+void sendPotValues(int (&pots)[8], int len) {
+  Serial.print(pots[0], DEC);
 
-  Serial.print(pot1, DEC); 
-  Serial.print(",");
-  Serial.print(pot2, DEC);
-  Serial.print(",");
-  Serial.print(pot3, DEC);
-  Serial.print(",");
+  for (int i = 1; i < len; i += 1) {
+    Serial.print(",");
+    Serial.print(pots[i], DEC);
+  }
 
-  Serial.print(pot4, DEC);
-  Serial.print(",");
-  Serial.print(pot5, DEC);
-  Serial.print(",");
-  Serial.print(pot6, DEC);
-  Serial.print(",");
-  Serial.print(pot7, DEC);
-  Serial.print(",");
-  Serial.print(pot8, DEC);
-  Serial.print(",");
   Serial.println();
 }
