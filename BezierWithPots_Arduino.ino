@@ -19,8 +19,6 @@ float h = 0;
 int startButton = 24;
 int aa, bb, cc, dd, ee, ff, gg, hh;
 
-int Value1, Value2, Value3, Value4, Value5, Value6, Value7, Value8;
-
 void setup() {
   Serial.begin(9600);
 
@@ -196,31 +194,31 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
 }
 
 void findPotValues() {
-  Value1 = analogRead(A13);
-  Value2 = analogRead(A12);
-  Value3 = analogRead(A11);
-  Value4 = analogRead(A10);
-  Value5 = analogRead(A1);
-  Value6 = analogRead(A0);
-  Value7 = analogRead(A4);
-  Value8 = analogRead(A3);
+  int pot1 = analogRead(A13);
+  int pot2 = analogRead(A12);
+  int pot3 = analogRead(A11);
+  int pot4 = analogRead(A10);
+  int pot5 = analogRead(A1);
+  int pot6 = analogRead(A0);
+  int pot7 = analogRead(A4);
+  int pot8 = analogRead(A3);
 
-  Serial.print(Value1, DEC); 
+  Serial.print(pot1, DEC); 
   Serial.print(",");
-  Serial.print(Value2, DEC);
+  Serial.print(pot2, DEC);
   Serial.print(",");
-  Serial.print(Value3, DEC);
+  Serial.print(pot3, DEC);
   Serial.print(",");
 
-  Serial.print(Value4, DEC);
+  Serial.print(pot4, DEC);
   Serial.print(",");
-  Serial.print(Value5, DEC);
+  Serial.print(pot5, DEC);
   Serial.print(",");
-  Serial.print(Value6, DEC);
+  Serial.print(pot6, DEC);
   Serial.print(",");
-  Serial.print(Value7, DEC);
+  Serial.print(pot7, DEC);
   Serial.print(",");
-  Serial.print(Value8, DEC);
+  Serial.print(pot8, DEC);
   Serial.print(",");
   Serial.println();
 }
