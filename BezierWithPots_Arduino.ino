@@ -19,15 +19,6 @@ float h = 0;
 int startButton = 24;
 int aa, bb, cc, dd, ee, ff, gg, hh;
 
-int AnalogPin13 = A13; 
-int AnalogPin12 = A12; 
-int AnalogPin11 = A11;
-int AnalogPin10 = A10;
-int AnalogPin1 = A1;
-int AnalogPin0 = A0;
-int AnalogPin4 = A4;
-int AnalogPin3 = A3;
-
 int Value1, Value2, Value3, Value4, Value5, Value6, Value7, Value8;
 
 void setup() {
@@ -205,14 +196,14 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
 }
 
 void findPotValues() {
-  Value1 = analogRead(AnalogPin13);
-  Value2 = analogRead(AnalogPin12);
-  Value3 = analogRead(AnalogPin11);
-  Value4 = analogRead(AnalogPin10);
-  Value5 = analogRead(AnalogPin1);
-  Value6 = analogRead(AnalogPin0);
-  Value7 = analogRead(AnalogPin4);
-  Value8 = analogRead(AnalogPin3);
+  Value1 = analogRead(A13);
+  Value2 = analogRead(A12);
+  Value3 = analogRead(A11);
+  Value4 = analogRead(A10);
+  Value5 = analogRead(A1);
+  Value6 = analogRead(A0);
+  Value7 = analogRead(A4);
+  Value8 = analogRead(A3);
 
   Serial.print(Value1, DEC); 
   Serial.print(",");
