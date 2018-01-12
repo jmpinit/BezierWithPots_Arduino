@@ -31,6 +31,9 @@ typedef struct Point {
 void setup() {
   Serial.begin(9600);
 
+  // Initialize the PRNG with entropy derived from A0
+  randomSeed(seedOut(31));
+
   pinMode(9, INPUT_PULLUP);
   pinMode(A5, INPUT_PULLUP);
 
@@ -69,10 +72,6 @@ void loop() {
     ctrlPtD.x = pots[6] * 10;
     ctrlPtD.y = pots[5] * 10;
   }
-
-  unsigned long seed = seedOut(31);
-
-  randomSeed(seed);
 
   drawBezierCircles(&ctrlPtA, &ctrlPtB, &ctrlPtC, &ctrlPtD);
   delay(1000);
