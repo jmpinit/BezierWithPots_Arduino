@@ -120,6 +120,15 @@ void penDown() {
   setModeDraw();
 }
 
+void moveTo(long x, long y) {
+  long position[2];
+  position[0] = x;
+  position[1] = y;
+
+  steppers.moveTo(position);
+  steppers.runSpeedToPosition();
+}
+
 void interpolate(Point *result, Point *start, Point *end, float ratio) {
   float diffX = end->x - start->x;
   float diffY = end->y - start->y;
@@ -181,12 +190,9 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
       float deltaRadius = (deltaRadiusRange / 2) * cos(angle);
       float currentRadius = baseRadius + deltaRadius;
 
-      long position[2];
-      position[0] = center.x + currentRadius * sin(angle);
-      position[1] = center.y + currentRadius * cos(angle);
-
-      steppers.moveTo(position);
-      steppers.runSpeedToPosition();
+      int x = center.x + currentRadius * sin(angle);
+      int y = center.y + currentRadius * cos(angle);
+      moveTo(x, y);
 
       if (mode != MODE_DRAW) {
         penDown();
