@@ -18,15 +18,15 @@ enum Mode {
 
 enum Mode mode;
 
+typedef struct Point {
+  float x, y;
+} Point;
+
 MultiStepper steppers; 
 
 AccelStepper stepper1(1, 2, 3);
 AccelStepper stepper2(1, 10, 11);
 AccelStepper stepper3(1, 5, 6);
-
-typedef struct Point {
-  float x, y;
-} Point;
 
 void setup() {
   Serial.begin(9600);
