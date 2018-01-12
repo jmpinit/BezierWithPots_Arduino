@@ -4,6 +4,21 @@
 
 const int BUTTON_START = 24;
 
+const int SPEED_GOTO = 1800;
+const int SPEED_DRAW = 800;
+const int SPEED_Z = 1000;
+
+const int ACCELERATION = 1000;
+
+const int PEN_UP_HEIGHT = 200;
+
+enum Mode {
+  MODE_GOTO,
+  MODE_DRAW,
+};
+
+enum Mode mode;
+
 MultiStepper steppers; 
 
 AccelStepper stepper1(1, 2, 3);
@@ -14,7 +29,6 @@ typedef struct Point {
   float x, y;
 } Point;
 
-int count = 0;
 float h = 0;
 
 void setup() {
@@ -35,20 +49,7 @@ void setup() {
   pinMode(A5, INPUT_PULLUP);
   pinMode(24, INPUT_PULLUP);
 
-  stepper1.setMaxSpeed(1800);
-  stepper1.setAcceleration(1000);
-
-  stepper2.setMaxSpeed(1800);
-  stepper2.setAcceleration(1000);
-
-  steppers.addStepper(stepper1);
-  steppers.addStepper(stepper2);
-
-  stepper1.setMaxSpeed(1800);
-  stepper2.setMaxSpeed(1800);
-
-  stepper3.setMaxSpeed(1000);
-  stepper3.setAcceleration(1000);
+  setModeDraw();
 }
 
 void loop() {
@@ -84,7 +85,6 @@ void loop() {
 
   unsigned long seed = seedOut(31);
 
-  count = 0;
   randomSeed(seed);
 
   float boxWidth = 8000;
@@ -96,6 +96,46 @@ void loop() {
 
   drawBezierCircles(&ctrlPtA, &ctrlPtB, &ctrlPtC, &ctrlPtD);
   delay(1000);
+}
+
+void setModeGoto() {
+  stepper1.setMaxSpeed(SPEED_GOTO);
+  stepper2.setMaxSpeed(SPEED_GOTO);
+
+  stepper3.setMaxSpeed(SPEED_Z);
+
+  stepper1.setAcceleration(ACCELERATION);
+  stepper2.setAcceleration(ACCELERATION);
+  stepper3.setAcceleration(ACCELERATION);
+
+  mode = MODE_GOTO;
+}
+
+void setModeDraw() {
+  stepper1.setMaxSpeed(SPEED_DRAW);
+  stepper2.setMaxSpeed(SPEED_DRAW);
+
+  stepper3.setMaxSpeed(SPEED_Z);
+
+  stepper1.setAcceleration(ACCELERATION);
+  stepper2.setAcceleration(ACCELERATION);
+  stepper3.setAcceleration(ACCELERATION);
+
+  mode = MODE_DRAW;
+}
+
+void penUp() {
+  stepper3.moveTo(PEN_UP_HEIGHT);
+  stepper3.runToPosition();
+
+  setModeGoto();
+}
+
+void penDown() {
+  stepper3.moveTo(0);
+  stepper3.runToPosition();
+
+  setModeDraw();
 }
 
 void interpolate(Point *result, Point *start, Point *end, float ratio) {
@@ -126,8 +166,7 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
   float inc = 1.0f / 200.0f;
 
   int r = random(300, 1000);
-  stepper3.moveTo(200);
-  stepper3.runToPosition();
+  penUp();
   float ratio;
   float spiralRatio;
   Point currentPoint;
@@ -155,32 +194,22 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
 
       float modr = 200 * cos(4 * 2 * PI * (ratio + spiralRatio * inc)) + r;
 
-      stepper1.setMaxSpeed(800);
-      stepper2.setMaxSpeed(800);
-
-      ///////////////////////////////////////////////////////////
-      if (count == 0) {
-        stepper1.setMaxSpeed(1800);
-        stepper2.setMaxSpeed(1800);
-      }
-      else {
-
-      }
-
       long position[2];
       position[0] = center.x; //+ modr * sin(angle);//uncomment for circles
       position[1] = center.y; //+ modr * cos(angle);//uncomment for circles
 
       steppers.moveTo(position);
       steppers.runSpeedToPosition();
-      stepper3.moveTo(0);
-      stepper3.runToPosition();
 
-      ///////////////////////////////////////////////////////////////////
       h = h + .05;
-      count += 1;
+
+      if (mode != MODE_DRAW) {
+        penDown();
+      }
     }
   }
+
+  penUp();
 }
 
 void sendPotValues(int (&pots)[8], int len) {
