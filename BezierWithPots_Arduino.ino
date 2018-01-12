@@ -11,6 +11,9 @@ const int ACCELERATION = 1000;
 
 const int PEN_UP_HEIGHT = 200;
 
+const int BASE_RADIUS_MIN = 300;
+const int BASE_RADIUS_MAX = 1000;
+
 enum Mode {
   MODE_GOTO,
   MODE_DRAW,
@@ -142,27 +145,45 @@ Point bezierPoint(Point *result, Point *p1, Point *p2, Point *p3, Point *p4, flo
 }
 
 void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
-  float inc = 1.0f / 200.0f;
-  int r = random(300, 1000);
+  const float curveSegmentCount = 200.0f;
+  float curveRatioIncrement = 1.0f / curveSegmentCount;
+
+  int baseRadius = random(BASE_RADIUS_MIN, BASE_RADIUS_MAX);
 
   penUp();
 
-  for (float ratio = inc; ratio < 1; ratio += inc) {
+  for (float curveRatio = curveRatioIncrement; curveRatio < 1; curveRatio += curveRatioIncrement) {
     Point currentPoint; 
-    bezierPoint(&currentPoint, p1, p2, p3, p4, ratio - inc);
+    bezierPoint(&currentPoint, p1, p2, p3, p4, curveRatio - curveRatioIncrement);
     Point nextPoint; 
-    bezierPoint(&nextPoint, p1, p2, p3, p4, ratio);
+    bezierPoint(&nextPoint, p1, p2, p3, p4, curveRatio);
 
     for (float spiralRatio = 0; spiralRatio < 1; spiralRatio += 1.0f / 64.0f) {
-      float angle = 2 * PI * spiralRatio;
       Point center; 
       interpolate(&center, &currentPoint, &nextPoint, spiralRatio);
 
-      float modr = 200 * cos(4 * 2 * PI * (ratio + spiralRatio * inc)) + r;
+      // Range of change to radius
+      // for example if the base radius is 300 and this is 200 then the radius
+      // could be as small as 200 or as big as 400
+      const int deltaRadiusRange = 400; 
+
+      // How many times the wave repeats along the curve
+      const int periods = 4;
+
+      // This value varies smoothly between zero and 1 along the full **spiral**
+      // (not just along the full curve). So it can be used to calculate a value
+      // which changes smoothly along the entire curve, like the angle below
+      float lerpedCurveRatio = curveRatio
+        + spiralRatio * curveRatioIncrement
+        - curveRatioIncrement;
+
+      float angle = TWO_PI * periods * lerpedCurveRatio;
+      float deltaRadius = (deltaRadiusRange / 2) * cos(angle);
+      float currentRadius = baseRadius + deltaRadius;
 
       long position[2];
-      position[0] = center.x; //+ modr * sin(angle);//uncomment for circles
-      position[1] = center.y; //+ modr * cos(angle);//uncomment for circles
+      position[0] = center.x + currentRadius * sin(angle);
+      position[1] = center.y + currentRadius * cos(angle);
 
       steppers.moveTo(position);
       steppers.runSpeedToPosition();
