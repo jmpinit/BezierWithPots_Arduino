@@ -1,6 +1,5 @@
 #include <AccelStepper.h>
 #include <MultiStepper.h>
-#include <Servo.h>
 
 const int BUTTON_START = 24;
 
@@ -29,25 +28,13 @@ typedef struct Point {
   float x, y;
 } Point;
 
-float h = 0;
-
 void setup() {
   Serial.begin(9600);
 
-  // randomSeed(1337);
-
   pinMode(9, INPUT_PULLUP);
-
-  pinMode(A13, INPUT);
-  pinMode(A12, INPUT);
-  pinMode(A11, INPUT);
-  pinMode(A10, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A0, INPUT);
-  pinMode(A4, INPUT);
-  pinMode(A3, INPUT);
   pinMode(A5, INPUT_PULLUP);
-  pinMode(24, INPUT_PULLUP);
+
+  pinMode(BUTTON_START, INPUT_PULLUP);
 
   setModeDraw();
 }
@@ -86,13 +73,6 @@ void loop() {
   unsigned long seed = seedOut(31);
 
   randomSeed(seed);
-
-  float boxWidth = 8000;
-  float boxHeight = 5000;
-
-  int nAngle = 0;
-  float increment = .01;
-  int radius = 80;
 
   drawBezierCircles(&ctrlPtA, &ctrlPtB, &ctrlPtC, &ctrlPtD);
   delay(1000);
@@ -164,22 +144,9 @@ Point bezierPoint(Point *result, Point *p1, Point *p2, Point *p3, Point *p4, flo
 
 void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
   float inc = 1.0f / 200.0f;
-
   int r = random(300, 1000);
+
   penUp();
-  float ratio;
-  float spiralRatio;
-  Point currentPoint;
-  bezierPoint(&currentPoint, p1, p2, p3, p4,  ratio - inc);
-  Point nextPoint;
-  bezierPoint(&nextPoint, p1, p2, p3, p4, ratio);
-
-  float angle = 2 * PI * spiralRatio;
-  Point center;
-  interpolate(&center, &currentPoint, &nextPoint, spiralRatio);
-  float modr = 200 * cos(4 * 2 * PI * (ratio + spiralRatio * inc)) + r;
-
-  long position[2];
 
   for (float ratio = inc; ratio < 1; ratio += inc) {
     Point currentPoint; 
@@ -200,8 +167,6 @@ void drawBezierCircles(Point *p1, Point *p2, Point *p3, Point *p4) {
 
       steppers.moveTo(position);
       steppers.runSpeedToPosition();
-
-      h = h + .05;
 
       if (mode != MODE_DRAW) {
         penDown();
